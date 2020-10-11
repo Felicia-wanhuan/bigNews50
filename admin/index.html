@@ -54,9 +54,9 @@
 
         </div>
     </div>
-
+    <script src="./libs/http.js"></script>
     <script>
-        $(function(){
+        $(function () {
             //原生js设置请求头，带上token令牌
             // let xhr = new XMLHttpRequest();
             // xhr.open('get','http://localhost:8080/api/v1/admin/user/info');
@@ -66,30 +66,31 @@
             // }
             // xhr.send();
 
-
+            //得到管理员信息
             $.ajax({
-                type:'get',
+                type: 'get',
                 // headers:{
                 //     'Authorization':localStorage.getItem('token')
                 // },
-                url:'http://localhost:8080/api/v1/admin/user/info',
-                success:function(backData){
-                    $('.user_info>img').attr('src',backData.data.userPic);
+                url: BigNew.user_info,
+                success: function (backData) {
+                    $('.user_info>img').attr('src', backData.data.userPic);
                     $('.user_info>span>i').text(backData.data.nickname)
-                    $('.user_center_link>img').attr('src',backData.data.userPic)
+                    $('.user_center_link>img').attr('src', backData.data.userPic)
                 }
             });
-
-            $('.logout').on('click',function(e){
+            //登出
+            $('.logout').on('click', function (e) {
                 e.preventDefault();
-                if(confirm('你确定要退出吗？')){
+                if (confirm('你确定要退出吗？')) {
                     localStorage.removeItem('token');
-                window.location.href='./login.html'
+                    window.location.href = './login.html'
                 }
-                
-                
+
+
             })
         })
     </script>
 </body>
+
 </html>
