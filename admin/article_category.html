@@ -64,13 +64,14 @@
                 </div>
                 <div class="modal-body">
                     <form>
+                        <input type="hidden" name="id" id="idNum">
                         <div class="form-group">
                             <label for="recipient-name" class="control-label" id="lever1">文章分类名称:</label>
-                            <input type="text" class="form-control" id="recipient-name">
+                            <input type="text" class="form-control" id="recipient-name" name='name'>
                         </div>
                         <div class="form-group">
                             <label for="message-text" class="control-label" id="lever2">文章分类别名:</label>
-                            <input class="form-control" id="message-text"></input>
+                            <input class="form-control" id="message-text" name='slug'></input>
                         </div>
                     </form>
                 </div>
@@ -114,13 +115,29 @@
             updata();
             //点击新增或编辑按钮
             $('#exampleModal').on('show.bs.modal', function (e) {
-
                 if (e.relatedTarget === $('#xinzengfenlei')[0]) {
                     $('.modal-title').text('新增类别');
                     $('.modal-footer>button').eq(1).text('新增').addClass('btn-primary').removeClass('btn-success')
                 } else {
                     $('.modal-title').text('修改类别');
-                    $('.modal-footer>button').eq(1).text('编辑').addClass('btn-success').removeClass('btn-primary')
+                    $('.modal-footer>button').eq(1).text('编辑').addClass('btn-success').removeClass('btn-primary');
+
+                    //编辑第一步
+                    let id =$(e.relatedTarget).attr('data-id');
+                    $.ajax({
+                        type:'get',
+                        url:BigNew.category_search,
+                        data:{
+                            id:id
+                        },
+                        success:function(backData){
+                           if(backData.code==200){
+                               $('#recipient-name').val(backData.data[0].name)
+                               $('#message-text').val(backData.data[0].slug)
+                               $('#idNum').val(backData.data[0].id)
+                           }
+                        }
+                    })
                 }
             })
             //点击模态框的确定按钮
@@ -129,6 +146,10 @@
                 if($(this).hasClass('btn-primary')){
                     let name = $('#recipient-name').val().trim();
                     let slug = $('#message-text').val().trim();
+                    if(name==''||slug==''){
+                        alert('不能为空哟!');
+                        return;
+                    }
                     $.ajax({
                         type:'post',
                         url:BigNew.category_add,
@@ -147,11 +168,50 @@
                         }
                     })
                 }else{
-                    //编辑
-                    alert('bianji');
+                    // 编辑第二步
+                    let name = $('#recipient-name').val().trim();
+                    let slug = $('#message-text').val().trim();
+                    let id = $('#idNum').val().trim();
+                    $.ajax({
+                        type:'post',
+                        url:BigNew.category_edit,
+                        data:{
+                            name:name,
+                            id:id,
+                            slug:slug
+                        },
+                        success:function(backData){
+                            if(backData.code==200){
+                                alert('编辑成功');
+                                updata();
+                                $('#exampleModal').modal('hide')
+                            }
+                        }
+                    })
                 }
             })
+   
 
+            //删除按钮
+            $('tbody').on('click','.btn-delete',function(){
+                let id = $(this).attr('data-id');
+                if(confirm('确定要删除吗？')){
+                    $.ajax({
+                    type:'post',
+                    url:BigNew.category_delete,
+                    data:{
+                        id:id
+                    },
+                    success:function(backData){
+                       if(backData.code==204){
+                           alert('删除成功');
+                           updata();
+                       }
+                    }
+                })
+                }
+               
+            })
         })
     </script>
 </body>
