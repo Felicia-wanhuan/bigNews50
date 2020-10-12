@@ -76,7 +76,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-default btn-cancel" data-dismiss="modal">取消</button>
                     <button type="button" class="btn btn-primary" id="btn-sure">Send message</button>
                 </div>
             </div>
@@ -102,63 +102,70 @@
     <script>
         $(function () {
             //获取全部分类渲染到页面
-            function updata(){
+            function updata() {
                 $.ajax({
-                type: 'get',
-                url: BigNew.category_list,
-                success: function (backData) {
-                    let res = template('category', backData);
-                    $('tbody').html(res)
-                }
-            });
+                    type: 'get',
+                    url: BigNew.category_list,
+                    success: function (backData) {
+                        let res = template('category', backData);
+                        $('tbody').html(res)
+                    }
+                });
             }
             updata();
             //点击新增或编辑按钮
             $('#exampleModal').on('show.bs.modal', function (e) {
                 if (e.relatedTarget === $('#xinzengfenlei')[0]) {
                     $('.modal-title').text('新增类别');
-                    $('.modal-footer>button').eq(1).text('新增').addClass('btn-primary').removeClass('btn-success')
+                    $('.modal-footer>button').eq(1).text('新增').addClass('btn-primary').removeClass('btn-success');
+
+                    //给模态框中的取消按钮设置点击事件
+                    $('.btn-cancel').on('click', function () {
+                        // $('#recipient-name').val('')
+                        // $('#message-text').val('')
+                        $('#exampleModal form')[0].reset();
+                    })
                 } else {
                     $('.modal-title').text('修改类别');
                     $('.modal-footer>button').eq(1).text('编辑').addClass('btn-success').removeClass('btn-primary');
 
                     //编辑第一步
-                    let id =$(e.relatedTarget).attr('data-id');
+                    let id = $(e.relatedTarget).attr('data-id');
                     $.ajax({
-                        type:'get',
-                        url:BigNew.category_search,
-                        data:{
-                            id:id
+                        type: 'get',
+                        url: BigNew.category_search,
+                        data: {
+                            id: id
                         },
-                        success:function(backData){
-                           if(backData.code==200){
-                               $('#recipient-name').val(backData.data[0].name)
-                               $('#message-text').val(backData.data[0].slug)
-                               $('#idNum').val(backData.data[0].id)
-                           }
+                        success: function (backData) {
+                            if (backData.code == 200) {
+                                $('#recipient-name').val(backData.data[0].name)
+                                $('#message-text').val(backData.data[0].slug)
+                                $('#idNum').val(backData.data[0].id)
+                            }
                         }
                     })
                 }
             })
             //点击模态框的确定按钮
-            $('#btn-sure').on('click',function(){
+            $('#btn-sure').on('click', function () {
                 //新增
-                if($(this).hasClass('btn-primary')){
+                if ($(this).hasClass('btn-primary')) {
                     let name = $('#recipient-name').val().trim();
                     let slug = $('#message-text').val().trim();
-                    if(name==''||slug==''){
+                    if (name == '' || slug == '') {
                         alert('不能为空哟!');
                         return;
                     }
                     $.ajax({
-                        type:'post',
-                        url:BigNew.category_add,
-                        data:{
-                            name:name,
-                            slug:slug
+                        type: 'post',
+                        url: BigNew.category_add,
+                        data: {
+                            name: name,
+                            slug: slug
                         },
-                        success:function(backData){
-                            if(backData.code==201){
+                        success: function (backData) {
+                            if (backData.code == 201) {
                                 alert('新增成功');
                                 updata();
                                 $('#exampleModal').modal('hide')
@@ -167,21 +174,23 @@
                             }
                         }
                     })
-                }else{
+
+
+                } else {
                     // 编辑第二步
                     let name = $('#recipient-name').val().trim();
                     let slug = $('#message-text').val().trim();
                     let id = $('#idNum').val().trim();
                     $.ajax({
-                        type:'post',
-                        url:BigNew.category_edit,
-                        data:{
-                            name:name,
-                            id:id,
-                            slug:slug
+                        type: 'post',
+                        url: BigNew.category_edit,
+                        data: {
+                            name: name,
+                            id: id,
+                            slug: slug
                         },
-                        success:function(backData){
-                            if(backData.code==200){
+                        success: function (backData) {
+                            if (backData.code == 200) {
                                 alert('编辑成功');
                                 updata();
                                 $('#exampleModal').modal('hide')
@@ -190,28 +199,29 @@
                     })
                 }
             })
-   
+
 
             //删除按钮
-            $('tbody').on('click','.btn-delete',function(){
+            $('tbody').on('click', '.btn-delete', function () {
                 let id = $(this).attr('data-id');
-                if(confirm('确定要删除吗？')){
+                if (confirm('确定要删除吗？')) {
                     $.ajax({
-                    type:'post',
-                    url:BigNew.category_delete,
-                    data:{
-                        id:id
-                    },
-                    success:function(backData){
-                       if(backData.code==204){
-                           alert('删除成功');
-                           updata();
-                       }
-                    }
-                })
+                        type: 'post',
+                        url: BigNew.category_delete,
+                        data: {
+                            id: id
+                        },
+                        success: function (backData) {
+                            if (backData.code == 204) {
+                                alert('删除成功');
+                                updata();
+                            }
+                        }
+                    })
                 }
-               
+
             })
+
         })
     </script>
 </body>
