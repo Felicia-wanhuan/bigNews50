@@ -178,17 +178,21 @@
 
                 } else {
                     // 编辑第二步
-                    let name = $('#recipient-name').val().trim();
-                    let slug = $('#message-text').val().trim();
-                    let id = $('#idNum').val().trim();
+                    // let name = $('#recipient-name').val().trim();
+                    // let slug = $('#message-text').val().trim();
+                    // let id = $('#idNum').val().trim();
+
+                    let data=$('#exampleModal form').serialize();
+                  
                     $.ajax({
                         type: 'post',
                         url: BigNew.category_edit,
-                        data: {
-                            name: name,
-                            id: id,
-                            slug: slug
-                        },
+                        // data: {
+                        //     name: name,
+                        //     id: id,
+                        //     slug: slug
+                        // },
+                        data:data,
                         success: function (backData) {
                             if (backData.code == 200) {
                                 alert('编辑成功');

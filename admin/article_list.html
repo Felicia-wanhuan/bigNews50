@@ -10,9 +10,8 @@
     <link rel="stylesheet" href="./css/reset.css">
     <link rel="stylesheet" href="./css/iconfont.css">
     <link rel="stylesheet" href="./css/main.css">
-    <script src="./libs/jquery-1.12.4.min.js"></script>
-    <!-- 引入模板引擎js文件 -->
-    <script src="./libs/template-web.js"></script>
+
+
 </head>
 
 <body>
@@ -69,9 +68,108 @@
                 </tbody>
             </table>
             <div class="row text-center">
+                <ul id="pagination" class="pagination-sm"></ul>
+                <p>没有数据</p>
             </div>
         </div>
     </div>
+
+    <script src="./libs/jquery-1.12.4.js"></script>
+    <script src="./libs/bootstrap/js/bootstrap.min.js"></script>
+    <script src="./libs/jquery.twbsPagination.js"></script>
+    <script src="./libs/http.js"></script>
+    <script src="./libs/template-web.js"></script>
+    <!-- 显示文章的模板 -->
+    <script id="artical-list" type="text/html">
+        {{each data.data v}}
+        <tr>
+            <td>{{v.title}}</td>
+            <td>{{v.author}}</td>
+            <td>{{v.category}}</td>
+            <td class="text-center">{{v.date}}</td>
+            <td class="text-center">{{v.state}}</td>
+            <td class="text-center">
+                <a href="article_edit.html?id={{v.id}}" class="btn btn-default btn-xs" >编辑</a>
+                <a href="javascript:void(0);" data-id="{{v.id}}" class="btn btn-danger btn-xs delete">删除</a>
+            </td>
+        </tr>
+        {{/each}}
+    </script>
+    <!-- 显示所有文章类别的模板 -->
+    <script id="category-temp" type="text/html">
+        <option value="">所有分类</option>
+        {{each data v}}
+        <option value="{{v.id}}">{{v.name}}</option>
+        {{/each}}
+    </script>
+    <script>
+        //获取文章
+
+        //分页插件 根据总页数生成总的页码数
+        getArtical(1, function (backData) {
+            $('#pagination').twbsPagination({
+                totalPages: backData.data.totalPage,
+                visiblePages: 7,
+                first: '首页',
+                prev: '上一页',
+                next: '下一页',
+                last: '尾页',
+                onPageClick: function (event, page) {
+                    $('#page-content').text('Page ' + page);
+                    getArtical(page);
+                }
+            });
+
+        });
+        //获取文章所有的类别
+        $.ajax({
+            type: 'get',
+            url: BigNew.category_list,
+            success: function (backData) {
+                let res = template('category-temp', backData);
+                $('#selCategory').html(res)
+            }
+        });
+        //筛选按钮
+        $('#btnSearch').on('click', function (e) {
+            e.preventDefault();
+            getArtical(1, function (backData) {
+                $('#pagination').twbsPagination('changeTotalPages', backData.data.totalPage, 1);
+            });
+
+
+        }
+        )
+
+        //封装获取文章代码
+        function getArtical(myPage, callback) {
+            $.ajax({
+                type: 'get',
+                url: BigNew.article_query,
+                data: {
+                    type: $('#selCategory').val(),
+                    state: $('#selStatus').val(),
+                    perpage: 3,
+                    page: myPage
+                },
+                success: function (backData) {
+                    // console.log(backData);
+                    if (backData.code == 200) {
+                        let res = template('artical-list', backData);
+                        $('tbody').html(res);
+                        if (backData.data.totalCount != 0) {
+                            $('#pagination ').show().next('p').hide();
+                        } else {
+                            $('#pagination').hide().next('p').show();
+                        }
+                        if (callback) {
+                            callback(backData);
+                        }
+                    }
+                }
+            })
+        }
+    </script>
 </body>
 
 </html>
