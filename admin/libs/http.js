@@ -1,6 +1,6 @@
 (function(w){
-    var baseURL = 'http://localhost:8080/api/v1'
-    var BigNew = {
+    let baseURL = 'http://localhost:8080/api/v1'
+    let BigNew = {
         baseURL:baseURL,//基地址
         user_login:      baseURL + '/admin/user/login',//用户登录
         user_info:       baseURL + '/admin/user/info',//用户信息
@@ -20,6 +20,17 @@
         comment_pass:    baseURL + '/admin/comment/pass',//文章评论通过
         comment_reject:  baseURL + '/admin/comment/reject',//文章评论不通过
         comment_delete:  baseURL + '/admin/comment/delete',//文章评论删除
+        index_latest:    baseURL + '/index/latest',//前台最新资讯
+        index_hotpic:    baseURL + '/index/hotpic',//前台热点图
+        index_rank:      baseURL + '/index/rank',//前台一周热门排行
+        index_latest_comment:  baseURL + '/index/latest_comment',//前台最新评论
+        index_attention:       baseURL + '/index/attention',//前台焦点关注
+        index_category:        baseURL + '/index/category',//前台文章类型
+        index_search:        baseURL + '/index/search',//前台文章搜索
+        index_article:        baseURL + '/index/article',//前台文章详细内容
+        index_article_search:        baseURL + '/admin/article/search',//前台文章详细内容
+        index_get_comment:        baseURL + '/index/get_comment',//前台文章详细内容
+        index_post_comment:        baseURL + '/index/post_comment',//前台发表评论
     };
 
     //暴露接口

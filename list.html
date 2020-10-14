@@ -136,17 +136,17 @@
             </div>
 
             <div id="pagination" class="page"></div>
-            <script>
+            <scrip>
                 $(function () {
-                    $("#pagination").pagination({
-                        currentPage: 2,
-                        totalPage: 8,
-                        callback: function (current) {
-                            alert('ok!');
-                        }
-                    });
+                $("#pagination").pagination({
+                currentPage: 2,
+                totalPage: 8,
+                callback: function (current) {
+                alert('ok!');
+                }
                 });
-            </script>
+                });
+            </scrip>
 
         </div>
         <div class="right_con setfl">
@@ -227,6 +227,96 @@
     </div>
     <!-- 导包template -->
     <script src="./js/template-web.js"></script>
+    <script src="./admin/libs/http.js"></script>
+    <script id="essay" type="text/html">
+    {{each data.data v}}
+    <div class="common_news_list">
+        <a href="./article.html?id={{v.id}}" class="list_pic"><img src="{{v.cover}}" alt=""></a>
+        <h4><a href="./article.html?id={{v.id}}">{{v.title}}</a></h4>
+        <p>{{v.intro}}
+        </p>
+        <div class="new_info">
+            <span>标签：{{v.category}}&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<i class="fa fa-eye"></i>&nbsp;阅读(
+                {{v.read}}
+                )&nbsp;&nbsp;&nbsp;<i class="fa fa-commenting"></i>&nbsp;评论( {{v.comments}} )</span>
+            <b>发布于 {{v.date}}</b>
+        </div>
+    </div>
+    {{/each}}
+    </script>
+
+    <script>
+        $(function () {
+            let value = window.location.search;
+            let value1 = value.split('=')[0];
+            let value2 = value.split('=')[1];
+            if (value == '') {
+                window.location.href = './index.html'
+            } else if (value1 == '?id') {
+                $.ajax({
+                    type: 'get',
+                    url: BigNew.index_search,
+                    data: {
+                        type: value2
+                    },
+                    success: function (backData) {
+                        // console.log(backData);
+                        let res = template('essay', backData);
+                        if (backData.data.data.length > 0) {
+
+                            // console.log(res);
+                            $('.left_con').html(' <div class="list_title"><h3>' +
+                                backData.data.data[0].category + ' </h3></div > ' + res)
+                        } else {
+                            $('.left_con').html('<div class="list_title"><h3>没有数据</h3></div >' + res)
+                        }
+                    }
+                })
+            } else {
+                value2 = decodeURI(value2)
+                // console.log(value2);
+                $.ajax({
+                    type: 'get',
+                    url: BigNew.index_search,
+                    data: {
+                        key: value2,
+                        page: 1,
+                        perpage: 6
+                    },
+                    success: function (backData) {
+
+                        let res = template('essay', backData);
+                        if (backData.data.data.length > 0) {
+
+                            $('.left_con').html('<div class="list_title"><h3>搜索关键词：' + value2 + '</h3></div >' + res)
+                        } else {
+                            $('.left_con').html('<div class="list_title"><h3>没有数据</h3></div >' + res)
+                        }
+                    }
+                        
+
+                }
+                )
+            }
+
+            // console.log(keyword);
+            // $.ajax({
+            //     type: 'get',
+            //     url: BigNew.index_search,
+            //     data: {
+            //         key: keyword,
+            //         page: 1,
+            //         perpage: 6
+            //     },
+            //     success: function (backData) {
+            //         let res = template('essay',backData);
+            //         $('.left_con').html(res)
+
+            //     }
+
+            // })
+        })
+    </script>
 </body>
 
 </html>
